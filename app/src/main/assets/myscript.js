@@ -19,6 +19,7 @@ var gameElements = [];
 var highScore = 0;
 var retrievedScore;
 var tutButton;
+var hit = 3;
 
 //declare the object and image variables
 var player,
@@ -35,7 +36,8 @@ var player,
     playButtonImage,
     replayButtonImage,
     highscoreBar,
-    tutorialScreen;
+    tutorialScreen,
+    healthBar;
 
 //the load function is the first function called and gets the canvas and the canvas context and also starts the game music
 function load() {
@@ -159,36 +161,52 @@ function init(){
         thisImage: obstacle1Image,
         x: 1200,
         y: 306,
-        startx: 1200
+        startx: 1200,
+        collider: true
     };
 
     obstacle2 = {
         thisImage: obstacle2Image,
         x: 2400,
         y: 300,
-        startx: 2400
+        startx: 2400,
+        collider: true
     };
 
     obstacle3 = {
         thisImage: obstacle3Image,
         x: 3200,
         y: 280,
-        startx: 3200
+        startx: 3200,
+        collider: true
     };
 
     obstacle4 = {
         thisImage: obstacle2Image,
         x: 4400,
         y: 300,
-        startx: 4400
+        startx: 4400,
+        collider: true
     };
 
     obstacle5 = {
         thisImage: obstacle3Image,
         x: 5600,
         y: 280,
-        startx: 5600
+        startx: 5600,
+        collider: true
     };
+
+    healthBar = {
+        thisImage: highscoreBar,
+        width:194,
+        height:40,
+        x:canvas.width/2-86,
+        y:20,
+        startW:194
+    };
+
+
 
     //create game objects arrays
     obstacles = [obstacle1,obstacle2,obstacle3,obstacle4,obstacle5];
@@ -246,6 +264,14 @@ function gameLoop() {
             context.drawImage(highscoreBar, 10, 10);
             styleText('#ffffff', '26px impact', 'left', 'middle');
             context.fillText("HighScore: " + highScore, 25, 40);
+
+            //Draw the players healthbar
+            context.drawImage(healthBar.thisImage, canvas.width/2-100, 10);
+            context.beginPath();
+            context.lineWidth = "6";
+            context.fillStyle = "red";
+            context.rect(healthBar.x, healthBar.y, healthBar.width, healthBar.height);
+            context.fill();
             
             //updates the score and rounds the number to create an int
             score = score + 0.1;
@@ -324,8 +350,11 @@ function gameLoop() {
 function resetGameElements(array)
 {
    player.y = 270;
+   healthBar.width = healthBar.startW;
+   hit = 3;
    array.forEach(function(element){       
-       element.x = element.startx;       
+       element.x = element.startx;
+       element.collider = true;
     }); 
 }
 
@@ -378,10 +407,17 @@ function resetGameElements(array)
     }
 
     obstacles.forEach(function(element){
-        if(obstacleColCheck(element,element.thisImage))
-        {            
+        if(obstacleColCheck(element,element.thisImage) && element.collider == true)
+        {
+            hit--;
             if (soundMgr != null) soundMgr.playSoundEffect("death.mp3");
-            state = GameStates.GAMEOVER;
+            if(hit == 2)
+            {
+                healthBar.width = healthBar.width/2;
+                element.collider = false;
+            }
+            else if(hit == 1)
+                state = GameStates.GAMEOVER;
         }
     });
  }
