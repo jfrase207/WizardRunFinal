@@ -202,10 +202,11 @@ function init(){
     if (soundMgr != null)
         soundMgr.playAudio("music.mp3",true);
 
+    if(localStorage.getItem("highscore") != null)
+                    highScore = localStorage.getItem("highscore");
+
     //change gamestate to start to go to start menu
     state = GameStates.START;
-    retrievedScore = localStorage.getItem("highscore");
-
 }
 
 // this is the main gameloop
@@ -254,10 +255,15 @@ function gameLoop() {
         case GameStates.GAMEOVER:
 
             if(highScore <= score)
-                highScore = scoreText;
+            {
+                localStorage.setItem("highscore", scoreText);
+            }
+
+            if(localStorage.getItem("highscore") != null)
+                   highScore = localStorage.getItem("highscore");
 
             score = 0;
-            //localStorage.highScore = highScore;
+
             //reset game elements            
             resetGameElements(gameElements);
             //draw gameover screen

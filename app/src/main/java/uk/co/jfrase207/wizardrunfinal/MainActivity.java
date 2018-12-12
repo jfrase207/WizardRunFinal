@@ -31,7 +31,10 @@ public class MainActivity extends AppCompatActivity {
          webView = (WebView)findViewById(R.id.webview1);
 
          webView.getSettings().setJavaScriptEnabled(true);
+         webView.getSettings().setDomStorageEnabled(true);
+
          webView.loadUrl("file:///android_asset/index.html");
+
          webView.addJavascriptInterface(new AudioInterface(this), "soundMgr");
 
 
